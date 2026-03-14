@@ -1,65 +1,124 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useMemo, useCallback } from "react";
+import rawTocs from "@/data/tocs.json";
+import type { TheoryOfChange, FilterState } from "@/lib/types";
+import {
+  ALL_DOMAINS,
+  ALL_TYPES,
+  ALL_GAP_TYPES,
+  ALL_EVIDENCE_LEVELS,
+} from "@/lib/constants";
+import { opportunityScore, exportToCsv } from "@/lib/utils";
+import HeroStats from "@/components/HeroStats";
+import GapMapChart from "@/components/GapMapChart";
+import FilterBar from "@/components/FilterBar";
+import TocCardGrid from "@/components/TocCardGrid";
+import DomainSummary from "@/components/DomainSummary";
+
+const allTocs = rawTocs as TheoryOfChange[];
 
 export default function Home() {
+  const [filters, setFilters] = useState<FilterState>({
+    domains: ALL_DOMAINS.slice(),
+    types: ALL_TYPES.slice(),
+    gapTypes: ALL_GAP_TYPES.slice(),
+    evidenceLevels: ALL_EVIDENCE_LEVELS.slice(),
+    persona: "impact",
+  });
+
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    let result = allTocs.filter(
+      (t) =>
+        filters.domains.includes(t.domain) &&
+        filters.types.includes(t.type) &&
+        filters.gapTypes.includes(t.primaryGapType) &&
+        filters.evidenceLevels.includes(t.weakestEvidenceLevel)
+    );
+
+    if (filters.persona === "impact") {
+      result = result.sort((a, b) => opportunityScore(b) - opportunityScore(a));
+    } else {
+      const evidenceOrder: Record<string, number> = {
+        Strong: 0,
+        Moderate: 1,
+        Speculative: 2,
+        None: 3,
+      };
+      result = result.sort((a, b) => {
+        const diff =
+          evidenceOrder[a.weakestEvidenceLevel] -
+          evidenceOrder[b.weakestEvidenceLevel];
+        if (diff !== 0) return diff;
+        const aCapital = a.primaryGapType === "Needs Capital" ? 0 : 1;
+        const bCapital = b.primaryGapType === "Needs Capital" ? 0 : 1;
+        return aCapital - bCapital;
+      });
+    }
+    return result;
+  }, [filters]);
+
+  const handleDotClick = useCallback((id: string) => {
+    setHighlightedId(id);
+    setSelectedId(id);
+  }, []);
+
+  const handleCardSelect = useCallback((id: string | null) => {
+    setSelectedId(id);
+    if (id) setHighlightedId(id);
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen bg-gray-50 font-sans">
+      <header className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">AI Impact Gap Map</h1>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Where AI investment would create the most good — and where it&apos;s missing
+            </p>
+          </div>
+          <button
+            onClick={() => exportToCsv(filtered)}
+            className="text-xs px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Export CSV
+          </button>
+        </div>
+      </header>
+
+      <HeroStats tocs={allTocs} />
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <GapMapChart
+          tocs={filtered}
+          onDotClick={handleDotClick}
+          highlightedId={highlightedId}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
+
+      <FilterBar
+        filters={filters}
+        onChange={setFilters}
+        totalCount={allTocs.length}
+        filteredCount={filtered.length}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <TocCardGrid
+          tocs={filtered}
+          highlightedId={highlightedId}
+          selectedId={selectedId}
+          onSelect={handleCardSelect}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <DomainSummary tocs={filtered} />
+      </div>
     </div>
   );
 }
