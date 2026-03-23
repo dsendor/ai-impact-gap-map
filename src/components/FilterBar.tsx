@@ -19,17 +19,30 @@ interface Props {
 
 export default function FilterBar({ filters, onChange, totalCount, filteredCount }: Props) {
   function toggleDomain(domain: Domain) {
-    const next = filters.domains.includes(domain)
-      ? filters.domains.filter((d) => d !== domain)
-      : [...filters.domains, domain];
-    onChange({ ...filters, domains: next.length ? next : ALL_DOMAINS });
+    const allSelected = filters.domains.length === ALL_DOMAINS.length;
+    const onlyThisSelected = filters.domains.length === 1 && filters.domains[0] === domain;
+    if (allSelected) {
+      // Solo this domain
+      onChange({ ...filters, domains: [domain] });
+    } else if (onlyThisSelected) {
+      // Back to all
+      onChange({ ...filters, domains: ALL_DOMAINS.slice() });
+    } else {
+      // Switch to this domain
+      onChange({ ...filters, domains: [domain] });
+    }
   }
 
   function toggleType(type: Type) {
-    const next = filters.types.includes(type)
-      ? filters.types.filter((t) => t !== type)
-      : [...filters.types, type];
-    onChange({ ...filters, types: next.length ? next : ALL_TYPES });
+    const allSelected = filters.types.length === ALL_TYPES.length;
+    const onlyThisSelected = filters.types.length === 1 && filters.types[0] === type;
+    if (allSelected) {
+      onChange({ ...filters, types: [type] });
+    } else if (onlyThisSelected) {
+      onChange({ ...filters, types: ALL_TYPES.slice() });
+    } else {
+      onChange({ ...filters, types: [type] });
+    }
   }
 
   function setGapType(value: GapType | "") {
@@ -68,36 +81,17 @@ export default function FilterBar({ filters, onChange, totalCount, filteredCount
     filters.evidenceLevels.length === 1 ? filters.evidenceLevels[0] : "";
 
   return (
-    <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex flex-wrap items-center gap-4">
-        {/* Persona toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 shrink-0">
-          <button
-            onClick={() => onChange({ ...filters, persona: "impact" })}
-            className={`text-xs px-3 py-1.5 rounded-md transition-all ${
-              filters.persona === "impact"
-                ? "bg-white shadow text-gray-900 font-medium"
-                : "text-gray-500"
-            }`}
-          >
-            Impact focus
-          </button>
-          <button
-            onClick={() => onChange({ ...filters, persona: "investment" })}
-            className={`text-xs px-3 py-1.5 rounded-md transition-all ${
-              filters.persona === "investment"
-                ? "bg-white shadow text-gray-900 font-medium"
-                : "text-gray-500"
-            }`}
-          >
-            Investment focus
-          </button>
-        </div>
-
-        <div className="w-px h-6 bg-gray-200 shrink-0" />
-
-        {/* Domain pills */}
-        <div className="flex flex-wrap gap-1.5">
+    <div
+      className="sticky top-0 z-20 border-y backdrop-blur-sm"
+      style={{
+        backgroundColor: "rgba(28, 26, 23, 0.92)",
+        borderColor: "var(--border)",
+      }}
+    >
+      {/* Filters */}
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-0 flex-wrap">
+        {/* Domain filters */}
+        <div className="flex items-center gap-0.5">
           {ALL_DOMAINS.map((domain) => {
             const active = filters.domains.includes(domain);
             const color = DOMAIN_COLORS[domain];
@@ -105,24 +99,40 @@ export default function FilterBar({ filters, onChange, totalCount, filteredCount
               <button
                 key={domain}
                 onClick={() => toggleDomain(domain)}
-                className="text-xs px-2.5 py-1 rounded-full border transition-all"
+                className="flex items-center gap-1.5 px-2 py-1 transition-all"
                 style={{
-                  borderColor: color,
-                  backgroundColor: active ? color : "transparent",
-                  color: active ? "white" : color,
-                  opacity: active ? 1 : 0.6,
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "11px",
+                  color: active ? color : "var(--muted)",
                 }}
               >
+                {active && (
+                  <span
+                    className="inline-block rounded-full shrink-0"
+                    style={{
+                      width: "5px",
+                      height: "5px",
+                      backgroundColor: color,
+                    }}
+                  />
+                )}
                 {domain}
               </button>
             );
           })}
         </div>
 
-        <div className="w-px h-6 bg-gray-200 shrink-0" />
+        {/* Vertical divider */}
+        <div
+          className="shrink-0 mx-3 self-stretch"
+          style={{
+            width: "1px",
+            backgroundColor: "var(--border)",
+          }}
+        />
 
-        {/* Type pills */}
-        <div className="flex gap-1.5">
+        {/* Type filters */}
+        <div className="flex items-center gap-0.5">
           {ALL_TYPES.map((type) => {
             const active = filters.types.includes(type);
             const color = TYPE_COLORS[type];
@@ -130,27 +140,51 @@ export default function FilterBar({ filters, onChange, totalCount, filteredCount
               <button
                 key={type}
                 onClick={() => toggleType(type)}
-                className="text-xs px-2.5 py-1 rounded-full border transition-all"
+                className="flex items-center gap-1.5 px-2 py-1 transition-all"
                 style={{
-                  borderColor: color,
-                  backgroundColor: active ? color : "transparent",
-                  color: active ? "white" : color,
-                  opacity: active ? 1 : 0.6,
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "11px",
+                  color: active ? color : "var(--muted)",
                 }}
               >
+                {active && (
+                  <span
+                    className="inline-block rounded-full shrink-0"
+                    style={{
+                      width: "5px",
+                      height: "5px",
+                      backgroundColor: color,
+                    }}
+                  />
+                )}
                 {type}
               </button>
             );
           })}
         </div>
 
-        <div className="w-px h-6 bg-gray-200 shrink-0" />
+        {/* Vertical divider */}
+        <div
+          className="shrink-0 mx-3 self-stretch"
+          style={{
+            width: "1px",
+            backgroundColor: "var(--border)",
+          }}
+        />
 
         {/* Gap type dropdown */}
         <select
+          aria-label="Filter by gap type"
           value={selectedGapType}
           onChange={(e) => setGapType(e.target.value as GapType | "")}
-          className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          className="appearance-none rounded-md px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
+            border: "1px solid var(--border)",
+            backgroundColor: "var(--background)",
+            color: "var(--foreground)",
+          }}
         >
           <option value="">All gap types</option>
           {ALL_GAP_TYPES.map((g) => (
@@ -160,11 +194,28 @@ export default function FilterBar({ filters, onChange, totalCount, filteredCount
           ))}
         </select>
 
+        {/* Vertical divider */}
+        <div
+          className="shrink-0 mx-3 self-stretch"
+          style={{
+            width: "1px",
+            backgroundColor: "var(--border)",
+          }}
+        />
+
         {/* Evidence level dropdown */}
         <select
+          aria-label="Filter by evidence level"
           value={selectedEvidence}
           onChange={(e) => setEvidenceLevel(e.target.value as EvidenceLevel | "")}
-          className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          className="appearance-none rounded-md px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
+            border: "1px solid var(--border)",
+            backgroundColor: "var(--background)",
+            color: "var(--foreground)",
+          }}
         >
           <option value="">All evidence levels</option>
           {ALL_EVIDENCE_LEVELS.map((e) => (
@@ -174,17 +225,41 @@ export default function FilterBar({ filters, onChange, totalCount, filteredCount
           ))}
         </select>
 
+        {/* Clear / Reset */}
         {isFiltered && (
-          <button
-            onClick={clearAll}
-            className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
-          >
-            Clear filters
-          </button>
+          <>
+            <div
+              className="shrink-0 mx-3 self-stretch"
+              style={{
+                width: "1px",
+                backgroundColor: "var(--border)",
+              }}
+            />
+            <button
+              onClick={clearAll}
+              className="px-2 py-1 transition-colors hover:text-[var(--foreground)]"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                color: "var(--muted)",
+              }}
+            >
+              &times; Reset
+            </button>
+          </>
         )}
 
-        <span className="ml-auto text-xs text-gray-400 shrink-0">
-          {filteredCount} / {totalCount}
+        {/* Spacer + count */}
+        <span
+          className="ml-auto"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
+            color: "var(--muted)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          {filteredCount} of {totalCount}
         </span>
       </div>
     </div>

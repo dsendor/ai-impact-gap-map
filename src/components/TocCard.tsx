@@ -4,10 +4,8 @@ import { forwardRef } from "react";
 import type { TheoryOfChange } from "@/lib/types";
 import {
   DOMAIN_COLORS,
-  TYPE_COLORS,
   INVESTMENT_COLORS,
   EVIDENCE_COLORS,
-  IMPACT_COLORS,
 } from "@/lib/constants";
 
 interface Props {
@@ -16,61 +14,98 @@ interface Props {
   highlighted: boolean;
 }
 
-function Badge({
-  label,
-  color,
-}: {
-  label: string;
-  color: string;
-}) {
-  return (
-    <span
-      className="text-xs px-2 py-0.5 rounded-full font-medium text-white"
-      style={{ backgroundColor: color }}
-    >
-      {label}
-    </span>
-  );
-}
-
 const TocCard = forwardRef<HTMLDivElement, Props>(function TocCard(
   { toc, onClick, highlighted },
   ref
 ) {
+  const domainColor = DOMAIN_COLORS[toc.domain];
+  const investmentColor = INVESTMENT_COLORS[toc.investmentLevel];
+  const evidenceColor = EVIDENCE_COLORS[toc.weakestEvidenceLevel];
+  const isMinimalInvestment = toc.investmentLevel === "Minimal/None";
+  const isNoEvidence = toc.weakestEvidenceLevel === "None";
+  const showGap =
+    toc.primaryGapType && toc.primaryGapType !== "Not a Gap";
+
   return (
     <div
       ref={ref}
+      data-testid="toc-card"
       onClick={onClick}
-      className={`bg-white rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
+      className={`bg-[var(--surface)] rounded-lg cursor-pointer transition-all duration-200 hover:bg-[var(--surface-hover)] p-4 ${
         highlighted
-          ? "border-blue-400 shadow-md ring-2 ring-blue-200"
-          : "border-gray-100"
+          ? "border border-[var(--accent)] shadow-[0_0_12px_rgba(199,64,45,0.15)]"
+          : "border border-[var(--border)] hover:border-[var(--border-bright)]"
       }`}
+      style={{ borderLeft: `3px solid ${domainColor}` }}
     >
-      <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-2 line-clamp-2">
+      {/* Title */}
+      <h3
+        className="font-normal text-[var(--foreground)] text-sm leading-snug mb-2 line-clamp-2"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
         {toc.name}
       </h3>
 
-      <div className="flex flex-wrap gap-1 mb-2">
-        <Badge label={toc.domain} color={DOMAIN_COLORS[toc.domain]} />
-        <Badge label={toc.type} color={TYPE_COLORS[toc.type]} />
-        <Badge label={toc.impactScale} color={IMPACT_COLORS[toc.impactScale]} />
-        <Badge
-          label={toc.investmentLevel}
-          color={INVESTMENT_COLORS[toc.investmentLevel]}
-        />
-        <Badge
-          label={toc.weakestEvidenceLevel}
-          color={EVIDENCE_COLORS[toc.weakestEvidenceLevel]}
-        />
+      {/* Structured data row */}
+      <p
+        className="text-[11px] uppercase tracking-wide mb-2 leading-none"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        <span style={{ color: domainColor }}>{toc.domain}</span>
+        <span className="text-[var(--muted)]">
+          {" · "}
+          {toc.type}
+          {" · "}
+          {toc.impactScale}
+        </span>
+      </p>
+
+      {/* Meta line — Investment + Evidence */}
+      <div
+        className="flex items-center gap-3 mb-2 text-[10px] uppercase tracking-wide"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        <span className="inline-flex items-center gap-1">
+          <span
+            className="inline-block w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: investmentColor }}
+          />
+          <span
+            style={{
+              color: isMinimalInvestment ? "var(--accent)" : "var(--muted)",
+            }}
+          >
+            {toc.investmentLevel}
+          </span>
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span
+            className="inline-block w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: evidenceColor }}
+          />
+          <span
+            style={{
+              color: isNoEvidence ? "var(--accent)" : "var(--muted)",
+            }}
+          >
+            {toc.weakestEvidenceLevel}
+          </span>
+        </span>
       </div>
 
-      {toc.primaryGapType && (
-        <p className="text-xs text-gray-400 mb-1">{toc.primaryGapType}</p>
+      {/* Gap type */}
+      {showGap && (
+        <p className="text-xs text-[var(--muted)] italic mb-1">
+          {toc.primaryGapType}
+        </p>
       )}
 
+      {/* Investment case */}
       {toc.investmentCase && (
-        <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+        <p
+          className="text-xs text-[var(--foreground)] opacity-60 line-clamp-2 leading-relaxed"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
           {toc.investmentCase}
         </p>
       )}
