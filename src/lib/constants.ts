@@ -1,40 +1,41 @@
 import type { Domain, Type, InvestmentLevel, EvidenceLevel, ImpactScale } from "./types";
 
+// Warm dark-mode domain colors
 export const DOMAIN_COLORS: Record<Domain, string> = {
-  Healthcare: "#3B82F6",
-  Education: "#22C55E",
-  "Climate/Energy": "#F97316",
-  "Scientific Research": "#A855F7",
-  "Labor/Employment": "#EAB308",
-  "Cross-Domain": "#6B7280",
+  Healthcare: "#4B9FE5",
+  Education: "#3DBF78",
+  "Climate/Energy": "#E8850A",
+  "Scientific Research": "#A050E0",
+  "Labor/Employment": "#D9447A",
+  "Cross-Domain": "#9E9080",
 };
 
 export const TYPE_COLORS: Record<Type, string> = {
-  Benefit: "#22C55E",
-  Harm: "#EF4444",
-  Mitigation: "#3B82F6",
+  Benefit: "#6BAF7B",
+  Harm: "#FF4040",
+  Mitigation: "#7B9FF5",
 };
 
 export const INVESTMENT_COLORS: Record<InvestmentLevel, string> = {
-  Heavy: "#1E3A5F",
-  Moderate: "#3B82F6",
-  Light: "#93C5FD",
-  "Minimal/None": "#EF4444",
-  Unknown: "#9CA3AF",
+  Heavy: "#5B9BD5",
+  Moderate: "#7BAFCF",
+  Light: "#A3C4DB",
+  "Minimal/None": "#C7402D",
+  Unknown: "#6B635A",
 };
 
 export const EVIDENCE_COLORS: Record<EvidenceLevel, string> = {
-  Strong: "#22C55E",
-  Moderate: "#EAB308",
-  Speculative: "#F97316",
-  None: "#EF4444",
+  Strong: "#6BAF7B",
+  Moderate: "#D4A843",
+  Speculative: "#D4900A",
+  None: "#C7402D",
 };
 
 export const IMPACT_COLORS: Record<ImpactScale, string> = {
-  Transformational: "#A855F7",
-  Large: "#22C55E",
-  Moderate: "#EAB308",
-  Small: "#9CA3AF",
+  Transformational: "#9B7DC8",
+  Large: "#6BAF7B",
+  Moderate: "#D4A843",
+  Small: "#8E8578",
 };
 
 export const IMPACT_VALUES: Record<ImpactScale, number> = {
@@ -54,9 +55,9 @@ export const INVESTMENT_VALUES: Record<InvestmentLevel, number> = {
 
 export const EVIDENCE_SIZE: Record<EvidenceLevel, number> = {
   Strong: 16,
-  Moderate: 12,
-  Speculative: 9,
-  None: 7,
+  Moderate: 13,
+  Speculative: 8,
+  None: 4,
 };
 
 export const ALL_DOMAINS: Domain[] = [
@@ -86,4 +87,19 @@ export const ALL_EVIDENCE_LEVELS: EvidenceLevel[] = [
   "Moderate",
   "Speculative",
   "None",
+];
+
+export const ALL_INVESTMENT_LEVELS: InvestmentLevel[] = [
+  "Heavy",
+  "Moderate",
+  "Light",
+  "Minimal/None",
+  "Unknown",
+];
+
+export const ALL_IMPACT_SCALES: ImpactScale[] = [
+  "Transformational",
+  "Large",
+  "Moderate",
+  "Small",
 ];

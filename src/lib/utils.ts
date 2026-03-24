@@ -61,38 +61,91 @@ export function impactToY(scale: ImpactScale): number {
 }
 
 export function exportToCsv(tocs: TheoryOfChange[]): void {
-  const headers = [
-    "Name",
-    "Domain",
-    "Type",
-    "Impact Scale",
-    "Investment Level",
-    "Evidence Level",
-    "Primary Gap Type",
-    "Time Horizon",
-    "Investment Case",
-    "Investable Insight",
-  ];
+  const hasClaims = tocs.some((t) => t.claims && t.claims.length > 0);
 
-  const rows = tocs.map((t) => [
-    `"${t.name.replace(/"/g, '""')}"`,
-    t.domain,
-    t.type,
-    t.impactScale,
-    t.investmentLevel,
-    t.weakestEvidenceLevel,
-    t.primaryGapType,
-    t.timeHorizon,
-    `"${t.investmentCase.replace(/"/g, '""')}"`,
-    `"${t.investableInsight.replace(/"/g, '""')}"`,
-  ]);
+  if (hasClaims) {
+    // Claim-level export
+    const headers = [
+      "Theory of Change",
+      "Domain",
+      "Type",
+      "Step",
+      "Claim",
+      "Evidence Level",
+      "Investment Level",
+      "Impact Scale",
+      "Gap Type",
+      "Is Gap",
+      "Time Horizon",
+      "Key Evidence",
+      "Investment Notes",
+      "Value If We Stop Here",
+    ];
 
-  const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const rows: string[][] = [];
+    for (const t of tocs) {
+      if (!t.claims?.length) continue;
+      for (const c of t.claims) {
+        rows.push([
+          `"${t.name.replace(/"/g, '""')}"`,
+          t.domain,
+          t.type,
+          String(c.step ?? ""),
+          `"${(c.name ?? "").replace(/"/g, '""')}"`,
+          c.evidenceLevel ?? "",
+          c.investmentLevel ?? "",
+          c.impactScale ?? "",
+          c.gapType ?? "",
+          c.isGap ? "Yes" : "No",
+          c.timeHorizon ?? "",
+          `"${(c.keyEvidence ?? "").replace(/"/g, '""')}"`,
+          `"${(c.investmentNotes ?? "").replace(/"/g, '""')}"`,
+          `"${(c.valueIfWeStopHere ?? "").replace(/"/g, '""')}"`,
+        ]);
+      }
+    }
+
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    downloadCsv(csv, "ai-impact-gap-map-claims.csv");
+  } else {
+    // ToC-level export (fallback)
+    const headers = [
+      "Name",
+      "Domain",
+      "Type",
+      "Impact Scale",
+      "Investment Level",
+      "Evidence Level",
+      "Primary Gap Type",
+      "Time Horizon",
+      "Investment Case",
+      "Investable Insight",
+    ];
+
+    const rows = tocs.map((t) => [
+      `"${t.name.replace(/"/g, '""')}"`,
+      t.domain,
+      t.type,
+      t.impactScale,
+      t.investmentLevel,
+      t.weakestEvidenceLevel,
+      t.primaryGapType,
+      t.timeHorizon,
+      `"${(t.investmentCase ?? "").replace(/"/g, '""')}"`,
+      `"${(t.investableInsight ?? "").replace(/"/g, '""')}"`,
+    ]);
+
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    downloadCsv(csv, "ai-impact-gap-map.csv");
+  }
+}
+
+function downloadCsv(csv: string, filename: string): void {
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "ai-impact-gap-map.csv";
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }

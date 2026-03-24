@@ -43,7 +43,10 @@ export default function DomainSummary({ tocs }: Props) {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-5">
+      <h2
+        className="text-xl font-semibold text-[var(--foreground)] mb-5"
+        style={{ fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)" }}
+      >
         By Domain
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -53,7 +56,8 @@ export default function DomainSummary({ tocs }: Props) {
           return (
             <div
               key={domain}
-              className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+              data-testid="domain-tab"
+              className="bg-[var(--surface)] rounded-xl border border-[var(--border)] overflow-hidden"
             >
               <div
                 className="h-1.5 w-full"
@@ -67,7 +71,7 @@ export default function DomainSummary({ tocs }: Props) {
                   >
                     {domain}
                   </h3>
-                  <span className="text-xs text-gray-400">{total} ToCs</span>
+                  <span className="text-xs text-[var(--muted)]">{total} ToCs</span>
                 </div>
 
                 {/* Investment distribution bar */}
@@ -75,13 +79,12 @@ export default function DomainSummary({ tocs }: Props) {
                   {INVESTMENT_ORDER.map((level) => {
                     const count = investmentDist[level] ?? 0;
                     if (!count) return null;
-                    const pct = (count / total) * 100;
                     return (
                       <div
                         key={level}
                         title={`${level}: ${count}`}
                         style={{
-                          width: `${pct}%`,
+                          width: `${(count / total) * 100}%`,
                           backgroundColor: INVESTMENT_COLORS[level],
                         }}
                       />
@@ -89,7 +92,7 @@ export default function DomainSummary({ tocs }: Props) {
                   })}
                 </div>
 
-                <div className="flex gap-3 text-xs text-gray-400 mb-3 flex-wrap">
+                <div className="flex gap-3 text-xs text-[var(--muted)] mb-3 flex-wrap">
                   {INVESTMENT_ORDER.filter(
                     (l) => (investmentDist[l] ?? 0) > 0
                   ).map((l) => (
@@ -104,20 +107,20 @@ export default function DomainSummary({ tocs }: Props) {
                 </div>
 
                 {transformational > 0 && (
-                  <p className="text-xs text-purple-600 font-medium mb-2">
+                  <p className="text-xs font-medium mb-2" style={{ color: "#c084fc" }}>
                     {transformational} transformational-scale{" "}
                     {transformational === 1 ? "opportunity" : "opportunities"}
                   </p>
                 )}
 
                 {best && (
-                  <div className="border-t border-gray-50 pt-3">
-                    <p className="text-xs text-gray-400 mb-0.5">Top opportunity</p>
-                    <p className="text-xs font-medium text-gray-700 leading-snug">
+                  <div className="border-t border-[var(--border)] pt-3">
+                    <p className="text-xs text-[var(--muted)] mb-0.5">Top opportunity</p>
+                    <p className="text-xs font-medium text-[var(--foreground)] leading-snug">
                       {best.name}
                     </p>
                     {best.investmentCase && (
-                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                      <p className="text-xs text-[var(--foreground)] opacity-50 mt-0.5 line-clamp-2">
                         {best.investmentCase}
                       </p>
                     )}
