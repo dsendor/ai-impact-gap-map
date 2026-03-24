@@ -19,19 +19,19 @@ interface Props {
 
 function labelInvestment(level: string): string {
   switch (level) {
-    case "Heavy": return "Heavy";
-    case "Moderate": return "Moderate";
-    case "Light": return "Light";
-    case "Minimal/None": return "Minimal";
+    case "Heavy": return "Heavy Investment";
+    case "Moderate": return "Moderate Investment";
+    case "Light": return "Light Investment";
+    case "Minimal/None": return "Minimal Investment";
     default: return level;
   }
 }
 
 function labelEvidence(level: string): string {
   switch (level) {
-    case "Strong": return "Strong";
-    case "Moderate": return "Moderate";
-    case "Speculative": return "Speculative";
+    case "Strong": return "Strong Evidence";
+    case "Moderate": return "Moderate Evidence";
+    case "Speculative": return "Speculative Evidence";
     case "None": return "No Evidence";
     default: return level;
   }
@@ -39,6 +39,9 @@ function labelEvidence(level: string): string {
 
 export default function CAChainViz({ steps, label }: Props) {
   const sorted = [...steps].sort((a, b) => a.step - b.step);
+
+  // Find the first breakpoint index for connector logic
+  const breakIndex = sorted.findIndex((s) => s.isBreakpoint);
 
   return (
     <div>
@@ -51,111 +54,130 @@ export default function CAChainViz({ steps, label }: Props) {
         </p>
       )}
 
-      {/* Horizontal on md+, vertical on mobile */}
-      <div className="flex flex-col md:flex-row md:items-start gap-0 md:gap-0">
-        {sorted.map((step, i) => {
-          const investColor =
-            INVESTMENT_COLORS[step.investmentLevel as InvestmentLevel] ?? "#6b7280";
-          const evidenceColor =
-            EVIDENCE_COLORS[step.evidenceLevel as EvidenceLevel] ?? "#6b7280";
-          const isBreakpoint = step.isBreakpoint;
+      {/* Horizontal on md+, vertical on mobile — matching FeaturedChainStory layout */}
+      <div className="overflow-x-auto pb-4">
+        <div className="flex flex-col md:flex-row items-stretch gap-0 min-w-0">
+          {sorted.map((step, i) => {
+            const investColor =
+              INVESTMENT_COLORS[step.investmentLevel as InvestmentLevel] ?? "#6b7280";
+            const evidenceColor =
+              EVIDENCE_COLORS[step.evidenceLevel as EvidenceLevel] ?? "#6b7280";
+            const isBreakPoint = breakIndex > -1 && i === breakIndex;
+            // The first breakpoint step AND all steps after it are "past break"
+            const isPastBreak = breakIndex > -1 && i >= breakIndex;
+            // Connector before this step uses the *previous* step's context
+            const prevIsPastBreak = breakIndex > -1 && i - 1 >= breakIndex;
 
-          return (
-            <div key={step.step} className="flex flex-col md:flex-row md:items-start flex-1 min-w-0">
-              {/* Step card */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="flex-1 rounded-lg p-4 min-w-0"
-                style={{
-                  background: isBreakpoint
-                    ? "color-mix(in srgb, var(--accent) 8%, var(--surface))"
-                    : "var(--surface)",
-                  border: `1px solid ${isBreakpoint ? "var(--accent)" : "var(--border)"}`,
-                  borderStyle: isBreakpoint ? "dashed" : "solid",
-                  minWidth: 0,
-                  maxWidth: "100%",
-                }}
-              >
-                {/* Step number */}
-                <div className="flex items-start gap-3 mb-3">
-                  <div
-                    className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px]"
-                    style={{
-                      color: investColor,
-                      fontFamily: "var(--font-mono)",
-                      border: `1.5px ${isBreakpoint ? "dashed" : "solid"} ${investColor}`,
-                    }}
-                  >
-                    {step.step}
+            return (
+              <div key={step.step} className="flex flex-col md:flex-row items-stretch flex-1 min-w-0">
+                {/* Connector before this card (not shown for first card) */}
+                {i > 0 && (
+                  <div className="flex items-center justify-center shrink-0">
+                    {isBreakPoint ? (
+                      /* Break indicator: dashed lines + lightning bolt — matches FeaturedChainStory exactly */
+                      <div className="flex flex-col md:flex-row items-center gap-1 px-2 py-3 md:py-0">
+                        <div className="hidden md:block relative">
+                          <svg width="48" height="24" viewBox="0 0 48 24" className="text-[var(--accent)]">
+                            <line x1="0" y1="12" x2="16" y2="12" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />
+                            <line x1="32" y1="12" x2="48" y2="12" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />
+                            <path d="M18 6 L22 18 M26 6 L30 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        {/* Mobile vertical break */}
+                        <div
+                          className="md:hidden w-px h-8"
+                          style={{
+                            background: `repeating-linear-gradient(180deg, var(--accent) 0px, var(--accent) 3px, transparent 3px, transparent 6px)`,
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        {/* Regular arrow — matches FeaturedChainStory SVG arrow */}
+                        <div className="hidden md:flex items-center px-1">
+                          <svg width="20" height="12" viewBox="0 0 20 12">
+                            <line
+                              x1="0" y1="6" x2="14" y2="6"
+                              stroke={prevIsPastBreak ? "var(--accent)" : investColor}
+                              strokeWidth="1.5"
+                              opacity={prevIsPastBreak ? 0.4 : 0.5}
+                              strokeDasharray={prevIsPastBreak ? "3 3" : "none"}
+                            />
+                            <path
+                              d="M13 2 L18 6 L13 10"
+                              stroke={prevIsPastBreak ? "var(--accent)" : investColor}
+                              strokeWidth="1.5"
+                              fill="none"
+                              opacity={prevIsPastBreak ? 0.4 : 0.5}
+                            />
+                          </svg>
+                        </div>
+                        {/* Mobile vertical line */}
+                        <div className="md:hidden flex justify-center">
+                          <div
+                            className="w-px h-5"
+                            style={{
+                              background: prevIsPastBreak ? "var(--accent)" : investColor,
+                              opacity: prevIsPastBreak ? 0.4 : 0.3,
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {isBreakpoint && (
-                    <span
-                      className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded"
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        color: "var(--accent)",
-                        background: "color-mix(in srgb, var(--accent) 15%, transparent)",
-                        border: "1px solid var(--accent)",
-                      }}
-                    >
-                      Gap
-                    </span>
-                  )}
-                </div>
+                )}
 
-                {/* Step name */}
-                <p
-                  className="text-sm leading-snug mb-3"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  {step.name}
-                </p>
-
-                {/* Badges */}
-                <div className="space-y-1">
-                  <p className="text-[10px]" style={{ fontFamily: "var(--font-mono)" }}>
-                    <span style={{ color: investColor }}>
-                      {labelInvestment(step.investmentLevel)}
-                    </span>
-                    <span style={{ color: "var(--muted)" }}> · </span>
-                    <span style={{ color: evidenceColor }}>
-                      {labelEvidence(step.evidenceLevel)}
-                    </span>
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Connector */}
-              {i < sorted.length - 1 && (
-                <div className="flex md:items-center justify-center md:justify-start shrink-0">
-                  {/* Mobile: vertical line */}
-                  <div
-                    className="md:hidden w-px h-6 mx-auto"
+                {/* Step card — matches FeaturedChainStory renderStepCard */}
+                <div className="flex-1 min-w-0">
+                  <motion.div
+                    className="rounded-lg p-4 h-full"
                     style={{
-                      background: isBreakpoint
-                        ? `repeating-linear-gradient(180deg, var(--accent) 0px, var(--accent) 3px, transparent 3px, transparent 6px)`
-                        : investColor,
-                      opacity: 0.5,
-                      marginLeft: "24px",
+                      background: "var(--surface)",
+                      border: `1px solid ${isPastBreak && step.isBreakpoint ? "var(--accent)" : "var(--border)"}`,
+                      borderLeftWidth: isPastBreak && step.isBreakpoint ? "2px" : undefined,
+                      borderLeftColor: isPastBreak && step.isBreakpoint ? "var(--accent)" : undefined,
                     }}
-                  />
-                  {/* Desktop: arrow */}
-                  <span
-                    className="hidden md:flex items-center px-2 text-lg"
-                    style={{
-                      color: isBreakpoint ? "var(--accent)" : investColor,
-                      opacity: isBreakpoint ? 0.8 : 0.4,
-                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1, duration: 0.4 }}
                   >
-                    →
-                  </span>
+                    {/* Step number + investment label row — matches FeaturedChainStory */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div
+                        className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px]"
+                        style={{
+                          color: investColor,
+                          fontFamily: "var(--font-mono)",
+                          border: `1.5px ${step.isBreakpoint ? "dashed" : "solid"} ${investColor}`,
+                        }}
+                      >
+                        {step.step}
+                      </div>
+                      <span
+                        className="text-[10px] tracking-wider uppercase"
+                        style={{ fontFamily: "var(--font-mono)", color: investColor }}
+                      >
+                        {labelInvestment(step.investmentLevel)}
+                      </span>
+                    </div>
+
+                    {/* Step name */}
+                    <p className="text-sm leading-tight mb-2" style={{ color: "var(--foreground)" }}>
+                      {step.name}
+                    </p>
+
+                    {/* Evidence badge */}
+                    <div className="flex flex-wrap gap-x-2 text-[10px]" style={{ fontFamily: "var(--font-mono)" }}>
+                      <span style={{ color: evidenceColor }}>
+                        {labelEvidence(step.evidenceLevel)}
+                      </span>
+                    </div>
+                  </motion.div>
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

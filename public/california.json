@@ -7,72 +7,78 @@
   "heroStats": [
     { "value": "2,600+", "label": "AI companies in California" },
     { "value": "68%", "label": "of US venture capital" },
-    { "value": "$750M", "label": "Film tax credit annually" },
+    { "value": "$750M", "label": "Film Tax Credit annually" },
     { "value": "$0", "label": "spent measuring net AI impact" }
   ],
   "gapTypes": [
     {
       "type": "Needs Evidence",
-      "meaning": "The chain exists but we don't know if it works",
-      "policyAction": "Fund independent evaluation studies"
+      "meaning": "We don't know if this works. Nobody is measuring.",
+      "policyAction": "Commission independent research. Require reporting before expanding."
     },
     {
       "type": "Needs Capital",
-      "meaning": "Evidence is strong but investment hasn't followed",
-      "policyAction": "Direct state procurement and grant funding"
-    },
-    {
-      "type": "Needs Time",
-      "meaning": "The intervention is early — outcomes take years to materialize",
-      "policyAction": "Protect long-horizon funding from budget cycles"
+      "meaning": "The evidence is strong but nobody is deploying.",
+      "policyAction": "Direct state funding. Create incentives for deployment."
     },
     {
       "type": "Needs Evidence + Capital",
-      "meaning": "Both the research and the investment are missing",
-      "policyAction": "Co-fund research-to-deployment pipelines"
+      "meaning": "Both the proof and the funding are missing.",
+      "policyAction": "Fund pilot programs with built-in measurement."
     },
     {
-      "type": "Measurement Gap",
-      "meaning": "No one is tracking whether AI is helping or hurting",
-      "policyAction": "Mandate impact reporting from AI companies operating in CA"
+      "type": "Harm Unmeasured",
+      "meaning": "The harm chain is strong but no one is tracking it.",
+      "policyAction": "Mandate independent monitoring. Require disclosure."
+    },
+    {
+      "type": "Mitigation Failing",
+      "meaning": "The proposed fix isn't working or can't keep up.",
+      "policyAction": "Restrict or pause until a viable mitigation exists."
     }
   ],
   "examples": [
     {
       "id": "entertainment",
-      "title": "Entertainment Economy",
+      "title": "AI and California's Entertainment Economy",
+      "subhead": "The same technology. Two opposite outcomes. Nobody measuring which one is happening.",
       "domain": "Labor/Employment",
       "isDualChain": true,
       "gapType": "Needs Evidence",
-      "breakdownCallout": {
-        "stat": "$750M",
-        "text": "California's annual film and TV tax credit — with no requirement to measure AI's net impact on employment"
-      },
-      "structuralProblem": {
-        "stat": "118 days",
-        "text": "The 2023 WGA/SAG-AFTRA strike lasted 118 days. AI replacement was the central issue. No state data system tracked what happened to workers afterward."
-      },
-      "policyAction": "Require studios receiving CA tax credits to report AI usage and its employment impact annually",
-      "estimatedCost": "$2–5M to build the reporting infrastructure",
+      "whereItBreaks": "Neither side can prove its case. The $750M bet has no AI-specific provisions or measurement. SAG-AFTRA is renegotiating right now with AI as the central issue.",
+      "statCallouts": [
+        {
+          "stat": "$750M/yr",
+          "text": "California's Film Tax Credit — with no requirement to measure AI's net impact on employment",
+          "accent": true
+        },
+        {
+          "stat": "72%",
+          "text": "Of entertainment firms are early GenAI adopters. No independent study separates AI-driven displacement from the 2023 strikes, streaming transition, and production flight.",
+          "accent": false
+        }
+      ],
+      "policyAction": "Require AI workforce impact reporting for all productions receiving tax credits. Fund independent measurement (~$3-6M).",
+      "estimatedCost": "$3–6M",
       "benefitChain": [
         {
           "step": 1,
-          "name": "AI tools adopted in production",
+          "name": "AI content generation tools are production-ready",
           "investmentLevel": "Heavy",
           "evidenceLevel": "Strong",
           "isBreakpoint": false
         },
         {
           "step": 2,
-          "name": "Production costs reduced",
+          "name": "AI reduces production costs by 10-30%",
           "investmentLevel": "Moderate",
           "evidenceLevel": "Moderate",
           "isBreakpoint": false
         },
         {
           "step": 3,
-          "name": "Savings reinvested in new content",
-          "investmentLevel": "Light",
+          "name": "Expanded content output grows CA's $175B+ entertainment economy",
+          "investmentLevel": "Minimal/None",
           "evidenceLevel": "Speculative",
           "isBreakpoint": true
         }
@@ -80,129 +86,141 @@
       "harmChain": [
         {
           "step": 1,
-          "name": "AI replaces writers, artists, voice actors",
-          "investmentLevel": "Heavy",
-          "evidenceLevel": "Strong",
-          "isBreakpoint": false
-        },
-        {
-          "step": 2,
-          "name": "Wage compression and job losses",
+          "name": "Same AI tools displace CA creative workers",
           "investmentLevel": "Minimal/None",
           "evidenceLevel": "Moderate",
           "isBreakpoint": false
         },
         {
-          "step": 3,
-          "name": "No tracking. No mitigation. No data.",
+          "step": 2,
+          "name": "Entry-level talent pipeline collapses",
           "investmentLevel": "Minimal/None",
-          "evidenceLevel": "None",
+          "evidenceLevel": "Speculative",
           "isBreakpoint": true
+        },
+        {
+          "step": 3,
+          "name": "Hollywood's workforce hollowed out over a generation",
+          "investmentLevel": "Minimal/None",
+          "evidenceLevel": "Speculative",
+          "isBreakpoint": false
         }
       ]
     },
     {
       "id": "wildfire",
-      "title": "Wildfire Detection",
+      "title": "AI Wildfire Detection in California",
+      "subhead": "Detection works. The pipeline from detection to equitable evacuation doesn't exist.",
       "domain": "Climate/Energy",
       "isDualChain": false,
-      "gapType": "Needs Capital",
-      "breakdownCallout": {
-        "stat": "January 2025",
-        "text": "The LA wildfires killed 29 people and destroyed 18,000 structures. AI-powered detection systems existed. Warning dissemination to high-risk communities did not."
-      },
-      "whatDoesntExist": {
-        "stat": "What doesn't exist",
-        "text": "A funded system to ensure AI wildfire alerts actually reach mobile-home parks, non-English speakers, and elderly residents in evacuation zones."
-      },
-      "policyAction": "Fund last-mile alert dissemination infrastructure targeting underserved communities at wildfire risk",
-      "estimatedCost": "$15–30M one-time, $3M/year operations",
+      "gapType": "Needs Evidence + Capital",
+      "whereItBreaks": "No statewide platform connects AI detection to county-level evacuation decisions. The handoff from CAL FIRE to county emergency managers takes 30+ minutes. Non-English-speaking communities were missed entirely.",
+      "statCallouts": [
+        {
+          "stat": "1,668",
+          "text": "Fires detected by ALERTCalifornia's 1,200-camera AI network in one year. 636 before the first 911 call.",
+          "accent": false
+        },
+        {
+          "stat": "$40B",
+          "text": "Property destroyed in the January 2025 LA fires. AI cameras were online. Detection occurred. The pipeline to evacuation didn't exist.",
+          "accent": true
+        }
+      ],
+      "policyAction": "Fund a statewide integration platform (~$50-100M) connecting AI detection to county evacuation systems. Deploy multilingual alert infrastructure in the 15 highest-risk WUI counties.",
+      "estimatedCost": "$50–100M statewide platform",
       "chain": [
         {
           "step": 1,
-          "name": "Satellite & sensor data collection",
+          "name": "AI wildfire detection via camera network",
           "investmentLevel": "Heavy",
           "evidenceLevel": "Strong",
           "isBreakpoint": false
         },
         {
           "step": 2,
-          "name": "AI fire detection & prediction",
+          "name": "Detection triggers early warning",
           "investmentLevel": "Moderate",
-          "evidenceLevel": "Strong",
+          "evidenceLevel": "Moderate",
           "isBreakpoint": false
         },
         {
           "step": 3,
-          "name": "Alert dissemination to at-risk communities",
-          "investmentLevel": "Light",
+          "name": "Early warning enables faster evacuation",
+          "investmentLevel": "Minimal/None",
           "evidenceLevel": "Speculative",
           "isBreakpoint": true
         },
         {
           "step": 4,
-          "name": "Timely evacuation — lives saved",
+          "name": "Faster evacuation saves lives and property",
           "investmentLevel": "Minimal/None",
-          "evidenceLevel": "None",
+          "evidenceLevel": "Speculative",
           "isBreakpoint": false
         }
       ]
     },
     {
       "id": "economy",
-      "title": "California's Economy",
+      "title": "AI and California's Economy",
+      "subhead": "$203B poured into AI companies. Nobody measuring whether the wealth reaches Californians.",
       "domain": "Labor/Employment",
       "isDualChain": false,
       "gapType": "Needs Evidence",
-      "breakdownCallout": {
-        "stat": "$0",
-        "text": "Amount California spends annually measuring the net economic impact of AI on workers, wages, and communities"
-      },
-      "policyAction": "Commission a biennial California AI Economic Impact Report, tracking wages, employment, and inequality by region and demographic",
-      "estimatedCost": "$8–12M for first two years",
+      "whereItBreaks": "AI investment is at record highs while California tech employment is declining. 5.6% unemployment (highest among US states). Nine households control 15% of Silicon Valley wealth. Nobody has calculated the net fiscal impact.",
+      "statCallouts": [
+        {
+          "stat": "~$10B/yr",
+          "text": "Tech stock withholding — roughly 10% of all state income tax. The LAO warns this concentration mirrors the dot-com era.",
+          "accent": false
+        },
+        {
+          "stat": "$0",
+          "text": "Total investment specifically measuring whether AI-generated tax revenue exceeds revenue lost from AI-driven job displacement.",
+          "accent": true
+        }
+      ],
+      "policyAction": "Fund a net fiscal impact study (~$2-5M) using existing EDD and Franchise Tax Board data. Build a California AI Economic Impact Dashboard (~$1-3M), updated quarterly.",
+      "estimatedCost": "$2–5M net fiscal study + $1–3M dashboard",
       "chain": [
         {
           "step": 1,
-          "name": "AI drives productivity gains in CA industry",
+          "name": "AI industry concentration in California",
           "investmentLevel": "Heavy",
           "evidenceLevel": "Strong",
           "isBreakpoint": false
         },
         {
           "step": 2,
-          "name": "GDP growth & corporate profits increase",
+          "name": "Concentration drives economic growth",
           "investmentLevel": "Moderate",
           "evidenceLevel": "Moderate",
           "isBreakpoint": false
         },
         {
           "step": 3,
-          "name": "Worker impact tracked & policy responds",
+          "name": "Growth generates tax revenue for public services",
           "investmentLevel": "Minimal/None",
-          "evidenceLevel": "None",
+          "evidenceLevel": "Moderate",
           "isBreakpoint": true
         },
         {
           "step": 4,
-          "name": "Living standards preserved for all Californians",
+          "name": "Public services improve quality of life for Californians",
           "investmentLevel": "Minimal/None",
-          "evidenceLevel": "None",
+          "evidenceLevel": "Speculative",
           "isBreakpoint": false
         }
       ]
     }
   ],
   "proofOfConcept": {
+    "intro": "California is uniquely positioned to pilot this. You're ground zero for AI development. You already regulate. The framework is domain-agnostic — start with the domains that matter most and expand.",
     "deliverables": [
-      "3 fully-mapped causal chains for CA priority domains",
-      "Interactive opportunity map showing CA-relevant gaps",
-      "Policy action cards with cost estimates for each gap",
-      "Methodology documentation for state reporting"
+      "A California-specific gap map covering AI's impact on the state economy, healthcare, labor, and education",
+      "Per-domain breakdown of where AI is delivering value, where it's falling short, and where harms are going unmeasured",
+      "Specific, evidence-graded policy recommendations tied to each gap"
     ],
-    "externalValidation": [
-      { "source": "RAND Corporation", "note": "CA economic modeling framework" },
-      { "source": "Stanford HAI", "note": "AI impact assessment methodology" },
-      { "source": "CA Legislative Analyst's Office", "note": "Budget cost estimates" }
-    ]
+    "validationCallout": "Four governments (US, UK, Australia, Canada) commissioned a $300M blueprint for evidence synthesis infrastructure. The UK funded £11.5M for METIUS. None are AI-specific. The Gap Map fills that gap."
   }
 }

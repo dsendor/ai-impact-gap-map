@@ -8,6 +8,8 @@ const GAP_TYPE_COLORS: Record<string, string> = {
   "Needs Evidence + Time": "#E8850A",
   "Needs Capital + Time": "#D9447A",
   "Needs Evidence + Capital + Time": "#C7402D",
+  "Harm Unmeasured": "#D9447A",
+  "Mitigation Failing": "#C7402D",
   "Measurement Gap": "#D9447A",
   "Not a Gap": "#6BAF7B",
 };
